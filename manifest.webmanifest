@@ -1,0 +1,24 @@
+{
+  "name": "日进",
+  "short_name": "日进",
+  "description": "一个极简的每日成长记录工具。",
+  "start_url": "./rijin.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8f8",
+  "theme_color": "#f7f8f8",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
