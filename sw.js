@@ -1,4 +1,4 @@
-const CACHE_NAME = "rijin-v3";
+const CACHE_NAME = "rijin-v4";
 const ASSETS = [
   "./index.html",
   "./rijin.html",

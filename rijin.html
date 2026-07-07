@@ -112,11 +112,11 @@
     }
 
     .growth-card {
-      min-height: 430px;
+      min-height: 300px;
       display: grid;
-      align-content: center;
-      gap: 14px;
-      padding: 24px 22px 28px;
+      align-content: space-between;
+      gap: 24px;
+      padding: 28px 24px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel);
@@ -133,71 +133,79 @@
       pointer-events: none;
     }
 
-    .orb-wrap {
+    .chapter-head {
       position: relative;
-      width: min(310px, 100%);
-      aspect-ratio: 1;
-      margin: 8px auto 0;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 640;
     }
 
-    .orb {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-    }
-
-    .orbit {
-      fill: none;
-      stroke: rgba(148, 163, 184, 0.42);
-      stroke-width: 0.8;
-    }
-
-    .ring {
-      fill: none;
-      stroke: rgba(16, 185, 129, 0.45);
-      stroke-linecap: round;
-      stroke-width: 1.1;
-      transform-origin: 160px 160px;
-    }
-
-    .ring.hot {
-      stroke: var(--accent);
-      stroke-width: 2.4;
-    }
-
-    .grain {
-      fill: rgba(148, 163, 184, 0.28);
-    }
-
-    .spark {
-      fill: var(--accent);
-    }
-
-    .growth-copy {
-      position: relative;
-      text-align: left;
-      width: min(100%, 300px);
-      margin: 0 auto;
-    }
-
-    .score {
-      margin: 0;
-      font-size: 27px;
-      line-height: 1.2;
-      font-weight: 760;
-      letter-spacing: -0.03em;
-    }
-
-    .score span {
+    .chapter-head strong {
       color: var(--accent);
+      font-family: "Geist Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 15px;
       font-variant-numeric: tabular-nums;
     }
 
+    .hero-question {
+      margin: 0;
+      max-width: 9ch;
+      font-size: clamp(3rem, 16vw, 4.8rem);
+      line-height: 0.94;
+      font-weight: 820;
+      letter-spacing: -0.06em;
+    }
+
     .sub {
-      margin: 10px 0 0;
+      position: relative;
+      margin: 0;
       color: var(--muted);
       font-size: 15px;
       line-height: 1.65;
+    }
+
+    .week-track {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 7px;
+      margin-top: 2px;
+    }
+
+    .day-mark {
+      min-width: 0;
+    }
+
+    .day-mark i {
+      display: block;
+      height: 42px;
+      border-radius: 999px;
+      background: #e4e4e7;
+      transform-origin: bottom;
+      opacity: 0.78;
+    }
+
+    .day-mark.done i {
+      background: var(--accent);
+      opacity: 1;
+    }
+
+    .day-mark.today i {
+      outline: 2px solid rgba(16, 185, 129, 0.18);
+      outline-offset: 3px;
+    }
+
+    .day-mark span {
+      display: block;
+      margin-top: 9px;
+      color: var(--faint);
+      font-family: "Geist Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      text-align: center;
     }
 
     .sheet,
@@ -486,8 +494,8 @@
       color: var(--accent);
     }
 
-    .large-orb {
-      margin-top: 16px;
+    .week-track.large {
+      margin-top: 22px;
     }
 
     .bar {
@@ -546,26 +554,13 @@
 
     <section class="screen active" data-screen="today">
       <section class="growth-card" aria-label="今日成长体">
-        <div class="orb-wrap" aria-hidden="true">
-          <svg class="orb" viewBox="0 0 320 320">
-            <circle class="orbit" cx="160" cy="160" r="132"/>
-            <circle class="grain" cx="88" cy="154" r="2"/>
-            <circle class="grain" cx="235" cy="62" r="3"/>
-            <circle class="grain" cx="272" cy="171" r="1.8"/>
-            <circle class="ring" data-ring cx="160" cy="160" r="78"/>
-            <circle class="ring" data-ring cx="160" cy="160" r="84"/>
-            <circle class="ring" data-ring cx="160" cy="160" r="90"/>
-            <circle class="ring" data-ring cx="160" cy="160" r="96"/>
-            <circle class="ring" data-ring cx="160" cy="160" r="102"/>
-            <circle class="ring" data-ring cx="160" cy="160" r="108"/>
-            <circle class="ring hot" id="hotRing" cx="160" cy="160" r="112"/>
-            <circle class="spark" id="spark" cx="91" cy="217" r="5"/>
-          </svg>
+        <div class="chapter-head">
+          <span>晨章</span>
+          <strong id="todayScore">0%</strong>
         </div>
-        <div class="growth-copy">
-          <p class="score">晨章 <span id="todayScore">0%</span></p>
-          <p class="sub" id="scoreSub">把脑子清空一点，今天会更稳。</p>
-        </div>
+        <p class="hero-question">今天只推进一件事</p>
+        <div class="week-track" id="weekTrack" aria-label="最近七天"></div>
+        <p class="sub" id="scoreSub">把脑子清空一点，今天会更稳。</p>
       </section>
 
       <form class="sheet" id="entryForm">
@@ -649,17 +644,7 @@
       <section class="panel">
         <h2>成长体</h2>
         <p class="sub">它记录每天早上给自己的一个方向，不评价你停下来的日子。</p>
-        <div class="orb-wrap large-orb" aria-hidden="true">
-          <svg class="orb" viewBox="0 0 320 320">
-            <circle class="orbit" cx="160" cy="160" r="136"/>
-            <circle class="ring" cx="160" cy="160" r="70"/>
-            <circle class="ring" cx="160" cy="160" r="82"/>
-            <circle class="ring" cx="160" cy="160" r="94"/>
-            <circle class="ring" cx="160" cy="160" r="106"/>
-            <circle class="ring hot" cx="160" cy="160" r="118"/>
-            <circle class="spark" cx="228" cy="92" r="5"/>
-          </svg>
-        </div>
+        <div class="week-track large" id="growthTrack" aria-label="最近七天"></div>
       </section>
 
       <section class="panel">
@@ -776,30 +761,34 @@
       return Math.round((parts.filter(Boolean).length / parts.length) * 100);
     }
 
+    function renderTracks(score) {
+      const entries = readEntries();
+      const days = [];
+      const day = new Date(`${todayKey}T00:00:00`);
+
+      for (let index = 6; index >= 0; index -= 1) {
+        const date = new Date(day);
+        date.setDate(day.getDate() - index);
+        const key = dateKey(date);
+        const done = Boolean(entries[key]) || (key === todayKey && score > 0);
+        const height = done ? 42 : 18;
+        days.push(`
+          <span class="day-mark ${done ? "done" : ""} ${key === todayKey ? "today" : ""}">
+            <i style="height:${height}px"></i>
+            <span>${"日一二三四五六"[date.getDay()]}</span>
+          </span>
+        `);
+      }
+
+      document.querySelector("#weekTrack").innerHTML = days.join("");
+      document.querySelector("#growthTrack").innerHTML = days.join("");
+    }
+
     function updateOrb() {
       const score = todayScore();
-      const entries = readEntries();
-      const total = sortedKeys(entries).length;
-      const hot = document.querySelector("#hotRing");
-      const spark = document.querySelector("#spark");
-      const rings = document.querySelectorAll("[data-ring]");
-
-      rings.forEach((ring, index) => {
-        const length = 2 * Math.PI * Number(ring.getAttribute("r"));
-        const visible = Math.min(1, (total + index + 1) / 18);
-        ring.style.strokeDasharray = `${length * visible} ${length}`;
-        ring.style.transform = `rotate(${index * 10 + total * 4}deg)`;
-      });
-
-      const length = 2 * Math.PI * 112;
-      hot.style.strokeDasharray = `${length * Math.max(score, 6) / 100} ${length}`;
-      hot.style.transform = "rotate(-126deg)";
-
-      const angle = (-126 + score * 2.7) * Math.PI / 180;
-      spark.setAttribute("cx", 160 + Math.cos(angle) * 112);
-      spark.setAttribute("cy", 160 + Math.sin(angle) * 112);
       document.querySelector("#todayScore").textContent = `${score}%`;
       document.querySelector("#scoreSub").textContent = score ? "今天的方向已经变清楚。" : "把脑子清空一点，今天会更稳。";
+      renderTracks(score);
     }
 
     function renderStats() {
