@@ -591,8 +591,8 @@
           </svg>
         </div>
         <div class="growth-copy">
-          <p class="score">今日成长 <span id="todayScore">0%</span></p>
-          <p class="sub" id="scoreSub">写一句就会开始成形。</p>
+          <p class="score">晨章 <span id="todayScore">0%</span></p>
+          <p class="sub" id="scoreSub">把脑子清空一点，今天会更稳。</p>
         </div>
       </section>
 
@@ -606,6 +606,13 @@
           <button class="chip" type="button" data-category="心态">心态</button>
         </div>
 
+        <div class="chips" id="moodChips" aria-label="选择晨间状态">
+          <button class="chip active" type="button" data-mood="平稳">平稳</button>
+          <button class="chip" type="button" data-mood="清醒">清醒</button>
+          <button class="chip" type="button" data-mood="紧绷">紧绷</button>
+          <button class="chip" type="button" data-mood="低电">低电</button>
+        </div>
+
         <details open>
           <summary>
             <span class="token">
@@ -615,13 +622,13 @@
               </svg>
             </span>
             <span>
-              <span class="row-title">今天往前的一点</span>
-              <span class="row-preview" id="movePreview">例如：剪完一个片段，练了一组，认真打完一局复盘</span>
+              <span class="row-title">今天的主线</span>
+              <span class="row-preview" id="movePreview">只定一件今天最值得推进的事</span>
             </span>
             <span class="chev">›</span>
           </summary>
           <div class="detail-body">
-            <textarea id="move" rows="3" placeholder="今天我往前走了一点的是..."></textarea>
+            <textarea id="move" rows="3" placeholder="如果今天只推进一件事，我希望是..."></textarea>
           </div>
         </details>
 
@@ -633,8 +640,8 @@
               </svg>
             </span>
             <span>
-              <span class="row-title">当下行动</span>
-              <span class="row-preview" id="actionPreview">今天能做的下一步，不需要大</span>
+              <span class="row-title">第一步</span>
+              <span class="row-preview" id="actionPreview">小到现在就能开始</span>
             </span>
             <span class="chev">›</span>
           </summary>
@@ -651,8 +658,8 @@
               </svg>
             </span>
             <span>
-              <span class="row-title">放下焦虑</span>
-              <span class="row-preview" id="worryPreview">把未来先停在这里</span>
+              <span class="row-title">脑内噪音</span>
+              <span class="row-preview" id="worryPreview">写下来，然后只留下今天能做的部分</span>
             </span>
             <span class="chev">›</span>
           </summary>
@@ -662,7 +669,7 @@
         </details>
 
         <div class="save-row">
-          <button class="primary" type="submit">保存今天</button>
+          <button class="primary" type="submit">完成晨章</button>
           <span class="saved" id="savedLabel">已保存</span>
         </div>
       </form>
@@ -671,7 +678,7 @@
     <section class="screen" data-screen="growth">
       <section class="panel">
         <h2>成长体</h2>
-        <p class="sub">它只记录你做过的选择，不评价你停下来的日子。</p>
+        <p class="sub">它记录每天早上给自己的一个方向，不评价你停下来的日子。</p>
         <div class="orb-wrap large-orb" aria-hidden="true">
           <svg class="orb" viewBox="0 0 320 320">
             <circle class="orbit" cx="160" cy="160" r="136"/>
@@ -704,7 +711,7 @@
     <section class="screen" data-screen="review">
       <section class="panel">
         <h2>回看</h2>
-        <p class="sub">这里不是总结成败，只是留下你真的走过的证据。</p>
+        <p class="sub">这里不是总结成败，只是留下你每天早上选择过的方向。</p>
         <div class="timeline" id="timeline"></div>
       </section>
     </section>
@@ -736,7 +743,7 @@
   <script>
     const STORAGE_KEY = "rijin.entries";
     const todayKey = dateKey(new Date());
-    const state = { category: "表达" };
+    const state = { category: "表达", mood: "平稳" };
     const fields = {
       move: document.querySelector("#move"),
       action: document.querySelector("#action"),
@@ -789,9 +796,9 @@
     }
 
     function updatePreviews() {
-      document.querySelector("#movePreview").textContent = fields.move.value || "例如：剪完一个片段，练了一组，认真打完一局复盘";
-      document.querySelector("#actionPreview").textContent = fields.action.value || "今天能做的下一步，不需要大";
-      document.querySelector("#worryPreview").textContent = fields.worry.value || "把未来先停在这里";
+      document.querySelector("#movePreview").textContent = fields.move.value || "只定一件今天最值得推进的事";
+      document.querySelector("#actionPreview").textContent = fields.action.value || "小到现在就能开始";
+      document.querySelector("#worryPreview").textContent = fields.worry.value || "写下来，然后只留下今天能做的部分";
     }
 
     function todayScore() {
@@ -822,7 +829,7 @@
       spark.setAttribute("cx", 160 + Math.cos(angle) * 112);
       spark.setAttribute("cy", 160 + Math.sin(angle) * 112);
       document.querySelector("#todayScore").textContent = `${score}%`;
-      document.querySelector("#scoreSub").textContent = score ? "持续的选择，累积成你。" : "写一句就会开始成形。";
+      document.querySelector("#scoreSub").textContent = score ? "今天的方向已经变清楚。" : "把脑子清空一点，今天会更稳。";
     }
 
     function renderStats() {
@@ -846,9 +853,10 @@
       timeline.innerHTML = keys.map((key) => {
         const entry = entries[key];
         const text = entry.move || entry.action || entry.worry || "今天留下了一格。";
+        const meta = [entry.category || "晨章", entry.mood].filter(Boolean).join(" · ");
         return `
           <article class="entry">
-            <time>${formatDate(key)} · ${escapeHtml(entry.category || "成长")}</time>
+            <time>${formatDate(key)} · ${escapeHtml(meta)}</time>
             <p>${escapeHtml(text)}</p>
           </article>
         `;
@@ -858,11 +866,12 @@
     function loadToday() {
       const entry = readEntries()[todayKey];
       state.category = entry?.category || "表达";
+      state.mood = entry?.mood || "平稳";
       fields.move.value = entry?.move || "";
       fields.action.value = entry?.action || "";
       fields.worry.value = entry?.worry || "";
       document.querySelectorAll(".chip").forEach((chip) => {
-        chip.classList.toggle("active", chip.dataset.category === state.category);
+        chip.classList.toggle("active", chip.dataset.category === state.category || chip.dataset.mood === state.mood);
       });
       updatePreviews();
       updateOrb();
@@ -879,6 +888,7 @@
       const entries = readEntries();
       entries[todayKey] = {
         category: state.category,
+        mood: state.mood,
         move,
         action,
         worry,
@@ -905,7 +915,14 @@
       const chip = event.target.closest(".chip");
       if (!chip) return;
       state.category = chip.dataset.category;
-      document.querySelectorAll(".chip").forEach((item) => item.classList.toggle("active", item === chip));
+      document.querySelectorAll("#categoryChips .chip").forEach((item) => item.classList.toggle("active", item === chip));
+    });
+
+    document.querySelector("#moodChips").addEventListener("click", (event) => {
+      const chip = event.target.closest(".chip");
+      if (!chip) return;
+      state.mood = chip.dataset.mood;
+      document.querySelectorAll("#moodChips .chip").forEach((item) => item.classList.toggle("active", item === chip));
     });
 
     Object.values(fields).forEach((field) => {
